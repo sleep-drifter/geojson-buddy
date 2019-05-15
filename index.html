@@ -1,0 +1,421 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GeoJSON Buddy</title>
+  <meta name="viewport" content="width=device-width">
+
+  <link rel="shortcut icon" href="_images/icon.ico" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+  <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flickity/1.2.1/flickity.min.css" rel="stylesheet"> -->
+  <link href="css/base.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+  
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js'></script>
+  <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/14082/FileSaver.js'></script>
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css' type='text/css'/>
+  <link href="https://unpkg.com/ionicons@4.1.2/dist/css/ionicons.min.css" rel="stylesheet">
+  <!-- <link href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet"> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.2/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.2/mapbox-gl-geocoder.css' type='text/css' />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
+<link rel="stylesheet" href="https://use.typekit.net/ftg8lvo.css">
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  <!-- flickity -->
+
+  <!-- mapbox -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/5.1.5/turf.min.js"></script>
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+
+
+  <!-- dropzone -->
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/dropzone.js'></script>
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/basic.min.css'/> -->
+
+
+
+
+
+
+
+  
+
+</head>
+
+<body>
+<!-- <div id="splash">
+    <span>Loading Test...</span>
+</div> -->
+
+<!-- <div id="log">
+  <i id="toggle-log" class="icon ion-ios-arrow-down"></i>
+</div> -->
+
+<nav>
+  <div>
+
+    <h1>GeoJSON Buddy</h1>
+
+    <ul>
+      <li>
+        <i class="fas fa-plus-circle"></i>
+        <span>Add Data</span>
+      </li>
+
+      <li id="save-file">
+        <i class="fas fa-save"></i>
+        <span>Save your work</span>
+      </li>
+    </ul>
+
+  </div>
+
+  <div>
+    <ul>
+      <li>
+        <i class="fas fa-info-circle"></i>
+        <span>Info</span>
+      </li>
+
+      <!-- <li>
+        <i class="fas fa-walking"></i>
+        <span>Save your work</span>
+      </li> -->
+    </ul>
+  </div>
+</nav>
+
+
+<div id="map-tools" class="map-style-picker actions">
+  <div class="list-group">
+    <h2>Add to map</h2>
+
+    <div class="list-item icon-w-meta clickable" map-action action="new-point-layer">
+        <i class="fa fa-map-marker-alt"></i>
+        <p>Point</p>
+        <span>(1)</span>
+    </div>
+
+    <div class="list-item icon-w-meta clickable" map-action action="new-line-layer">
+        <i class="fa fa-minus"></i>
+        <p>Line</p>
+        <span>(2)</span>
+    </div>
+
+    <div class="list-item icon-w-meta clickable" map-action action="new-polygon-layer">
+        <i class="fa fa-draw-polygon"></i>
+        <p>Polygon</p>
+        <span>(3)</span>
+    </div>
+
+  </div> <!-- end of list group -->
+
+
+  <div class="list-group">
+    <h2>Map Style</h2>
+    
+      <div class="list-item input clickable">
+        <input name="map-style" type="radio" value="light" checked>
+        <label>Light</label>
+      </div>
+
+      <div class="list-item input clickable">
+        <input name="map-style" type="radio" value="dark">
+        <label>Dark</label>
+      </div>
+
+      <div class="list-item input clickable">
+        <input name="map-style" type="radio" value="street">
+        <label>Detailed</label>
+      </div>
+
+      <div class="list-item input clickable">
+        <input name="map-style" type="radio" value="satellite">
+        <label>Satellite</label>
+      </div>
+
+      <div class="list-item input clickable">
+        <input name="map-style" type="radio" value="satellite-labels">
+        <label>Satelittle (no labels)</label>
+      </div>
+    
+  </div> <!-- end of list group -->
+</div>
+
+<div id="sidebar">
+
+  <section class="left-sidebar">
+    <!-- <div class="text-group">
+    </div> -->
+    <div class="list-group" id="map-layers">
+      <h1>Map Layers</h1>
+      <!-- <div class="list-item icon-w-actions" polygon>
+        <i class="fa fa-map-marker-alt"></i>
+        <i class="fa fa-minus"></i>
+        <i class="fa fa-draw-polygon"></i>
+        <p>Polygon 1</p>
+        <ul>
+          <li><i class="fa fa-pencil-alt"></i></li>
+          <li><i class="fa fa-eye-slash"></i></li>
+        </ul>
+      </div> -->
+    </div>
+  </section>
+  <section class="right-sidebar">
+    <div class="list-group">
+      <div class="title-with-meta">
+        <h1>Operations</h1>
+        <div>
+          <span>Hints</span>
+          <input id="hints" type="checkbox" value="hints" checked>
+        </div>
+        
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="duplicate" point line polygon>
+        <div>
+          <p class="title">Duplicate</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Makes a copy of the selected geometry</p>
+          <p class="output">Output: New feature</p>
+        </div>
+      </div>
+
+<!--       <div class="list-item icon-list text-info operation" map-action action="delete" point line polygon>
+        <div>
+          <p class="title">Delete</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Deletes selected geometry</p>
+          <p class="output">Output: Deleted feature</p>
+        </div>
+      </div> -->
+
+      <div class="list-item icon-list text-info operation" map-action action="combine" polygon>
+        <div>
+          <p class="title">Union</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Merges all selected geometry</p>
+          <p class="output">Output: New Polygon (old features deleted)</p>
+        </div>
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="expand" point line polygon>
+        <div>
+          <p class="title">Offset</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Expands or contracts geometry by  specified distance</p>
+          <p class="output">Output: New polygon</p>
+        </div>
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="cut" polygon>
+        <div>
+          <p class="title">Cut</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Divides two polygons into distinct polygons. Any geometry outside of the “cut” will be deleted </p>
+          <p class="output">Output: Modifies selected polgons</p>
+        </div>
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="snap" polygon>
+        <div>
+          <p class="title">Snap to Point</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Takes a selected point on a line, polygon, or single point and snaps to the nearest vertex present on the map</p>
+          <p class="output">Output: new vertex position</p>
+        </div>
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="centeroid" polygon>
+        <div>
+          <p class="title">Centeroid</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Creates a point in the center of a polygon</p>
+          <p class="output">Output: New point</p>
+        </div>
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="rand-points" polygon>
+        <div>
+          <p class="title">Random Points</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Creates specified number of points within a polygon</p>
+          <p class="output">Output: New points (combined)</p>
+        </div>
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="combine-geometry" point line polygon>
+        <div>
+          <p class="title">Combine Features</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Groups geometies into a single feature collection so they can be selected as a unit</p>
+          <p class="output">Output: New group</p>
+        </div>
+      </div>
+
+      <div class="list-item icon-list text-info operation" map-action action="seperate-geometry" point line polygon>
+        <div>
+          <p class="title">Uncombine Features</p>
+          <ul>
+            <li><i class="fa fa-map-marker-alt"></i></li>
+            <li><i class="fa fa-minus"></i></li>
+            <li><i class="fa fa-draw-polygon"></i></li>
+          </ul>
+        </div>
+        <div>
+          <p>Changes multigeometry/feature collection into individual points</p>
+          <p class="output">Output: Features seperated</p>
+        </div>
+      </div>
+
+      
+    </div>
+
+
+
+    <!-- <div class="actions">
+        <h2>Transformation Actions</h2>
+        <ul class="action-btn-list">
+          <li class=""         action="new-polygon-layer">New Polygon                  <i class="icon ion-md-add-circle"></i></li>
+          <li class="disabled" action="duplicate">Duplicate              <i class="icon ion-md-albums"></i></li>
+          <li class="disabled" action="delete">Delete                       <i class="icon ion-md-trash"></i></li>
+          <li class="disabled" action="expand">Expand                       <i class="icon ion-md-resize"></i></li>
+          <li class="disabled" action="snap">Snap Point                 <i class="icon ion-md-color-wand"></i></li>
+          <li class="disabled" action="cut">Cut                                <i class="icon ion-md-cut"></i></li>
+          <li class="disabled" action="combine">Union  <i class="icon ion-md-cube"></i></li>
+        </ul>
+      </div> -->
+  </section>
+  
+</div> <!-- end of sidebar -->
+
+
+<div id='map' class="drop_zone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event);">
+  <div class="drop-hint">
+      <i class="icon ion-md-cloud-upload"></i>
+      <span>Drop .geojson file</span>
+    </div>
+</div>
+<!-- <div class="search-bar">
+  <input id="search-field">
+</div> -->
+
+
+
+<!-- <section id="tools">
+    <ul>
+      <li id="point"><i class="icon ion-md-color-wand"></i> Snap to nearest point</li>
+      <li id="combine"><i class="icon ion-md-cube"></i> Combine features</li>
+      <li id="subtract"><i class="icon ion-md-cut"></i> Cut from perimeter</li>
+      <li id="hole"><i class="icon ion-md-image"></i> Make Island </li>
+    </ul>
+    
+    <div class="layers">
+      <h1>layers</h1>
+      <article>
+        <span class="title">Perimeter</span>
+        <div class="controls">
+          <i class="icon ion-md-eye" type="viz"layer="perimeter"></i>
+          <i class="icon ion-md-unlock" type="lock"layer="perimeter"></i>
+        </div>
+      </article>
+      <article>
+        <span class="title">Scooter Excl.</span>
+        <div class="controls">
+          <i class="icon ion-md-eye" type="viz"layer="scooter-exclusion"></i>
+          <i class="icon ion-md-unlock" type="lock"layer="scooter-exclusion"></i>
+        </div>
+      </article>
+      <article>
+        <span class="title">Service Areas</span>
+        <div class="controls">
+          <i class="icon ion-md-eye" type="viz"layer="service-area"></i>
+          <i class="icon ion-md-unlock" type="lock"layer="service-area"></i>
+        </div>
+      </article>
+    </div>
+  </section> -->
+
+  <!-- <script src='js/jsondrop.js'></script> -->
+  <script type="text/javascript" src="js/script.js"></script>
+  <!-- <script src="https://unpkg.com/ionicons@4.1.2/dist/ionicons.js"></script> -->
+
+</body>
+
+</html>
